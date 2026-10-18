@@ -4,7 +4,7 @@
 
 This repository is a **research project**. It studies how publicly available tokenized-MMF data can be collected, stored, and independently verified. It is provided as code and methodology for studying open financial data — not a product, service, or offering, and no hosted service, dashboard, or bot is operated here.
 
-**Free and open.** The code is MIT-licensed and free to fork and use. There is **no paywall, no API key, and no advertising** — every endpoint (REST + MCP) is open, and the pipeline runs with no credentials. Monetization and freelance/lead-generation features that previously existed here have been removed.
+**Free and open.** The code is MIT-licensed and free to fork and use. There is **no paywall and no advertising** — every endpoint (REST + MCP) is open and the whole verification path runs with no credentials. The one exception is spelled out under [Status](#status): a Binance account key for signed calls, and a signing key to attest on-chain. Monetization and freelance/lead-generation features that previously existed here have been removed.
 
 ## Research questions
 
@@ -41,7 +41,19 @@ Verifies the payload hash matches the published keccak-256 and that the recovere
 
 ## Status
 
-Research code, provided as-is for study. No hosted service is operated, and no keys are required to run it.
+Research code, provided as-is for study. No hosted service is operated.
+
+What needs credentials, stated plainly rather than as a blanket "no keys":
+
+| Path | Needs |
+|---|---|
+| `bun run verify`, the read-only REST endpoints, the MCP server | nothing |
+| `scripts/binance.js` signed account calls | `BINANCE_API_KEY`, `BINANCE_API_SECRET` — it throws rather than falling back to a public endpoint |
+| attesting and publishing on-chain | a signing key for the agent wallet |
+| the Telegram webhook at `api/_tgbot.js` | mounted on every request, but inert without `TG_TOKEN`; it answers `ok` and never calls Telegram |
+
+So a stranger can clone this and run the whole verification path with no
+credentials at all. The credentialed paths are the ones that touch an account.
 
 ## Compliance
 
