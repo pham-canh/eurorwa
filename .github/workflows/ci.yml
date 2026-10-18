@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # There is no unit-test framework in this project. The two gates below are
+  # the ones that actually catch regressions here: tsc rejects the type errors
+  # that a runtime smoke test would only surface at request time, and
+  # scripts/axis-test.js asserts the 56 endpoint contracts the frontend reads.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: typecheck
+        run: bunx tsc --noEmit
+      - name: endpoint contract checks
+        run: bun run scripts/axis-test.js
